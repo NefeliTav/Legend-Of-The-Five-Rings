@@ -11,6 +11,10 @@ private:
 public:
     Item(string n, int x);
     int getType();
+    int getHarvestValue()
+    {
+        return 0;
+    }
     void printSpecific()
     {
         cout << "\t  Durability: " << durability << endl;

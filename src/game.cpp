@@ -1,6 +1,69 @@
 #include <iostream>
 using namespace std;
 
+#include "DeckBuilder.hpp"
+#include "TypeConverter.hpp"
+#include <time.h>
+
+#define MAX_CARD_IN_HAND 7
+#define STARTING_HAND_NUM 4
+
+class Player
+{
+private:
+    int pl;
+    DeckBuilder *d; // fatedeck & dynastydeck
+    list<GreenCard *> *hand;
+    list<BlackCard *> *provinces; //4 at first,isrevealed = 0
+    list<BlackCard *> *army;      //empty at first
+    list<BlackCard *> *h;         //empty at first
+    Stronghold *s;
+    int numberOfProvinces;
+
+public:
+    Player(int num)
+    {
+        pl = num;
+        //cout << "create player\n";
+        d = new DeckBuilder();
+        s = new Stronghold("my stronghold", STRONGHOLD);
+        provinces = new list<BlackCard *>();
+        hand = new list<GreenCard *>();
+        for (int i = 0; i < STARTING_HAND_NUM; i++)
+            getGreen();
+        for (int i = 0; i < 4; i++)
+            getBlack();
+        h = new list<BlackCard *>();
+        army = new list<BlackCard *>();
+        h->push_front(s);
+    }
+    ~Player()
+    {
+        //cout << "delete player\n";
+        delete s;
+        delete d;
+    }
+    void getGreen()
+    {
+        hand->push_front(d->getFrontGreen());
+        d->popFrontGreen();
+    }
+    void getBlack()
+    {
+        provinces->push_front(d->getFrontBlack());
+        d->popFrontBlack();
+    }
+    int get_honor()
+    {
+        return s->honor();
+    }
+
+    int get_army()
+    {
+        return army->empty();
+    }
+};
+
 int get_cost(int);
 
 Card::Card(string n, int x)

@@ -2,6 +2,7 @@
 #define HOLDING_HPP
 
 #include "Card.hpp"
+#include "DeckBuilder.hpp"
 
 class Holding : public BlackCard
 {
@@ -15,7 +16,20 @@ private:
 public:
     Holding(string n, int x);
     int getType();
-
+    int getMoney()
+    {
+        return harvestValue + bonusValue;
+    }
+    int getHarvestValue()
+    {
+        return harvestValue + bonusValue;
+    }
+    void setHarvestValue(int num)
+    {
+        if (num < 0)
+            return;
+        harvestValue = num;
+    }
     void printSpecific()
     {
         cout << "\t  Harvest Value: " << harvestValue << endl;
@@ -23,6 +37,30 @@ public:
             cout << "\t  Upper Holding: " << upperHolding->Card::getName() << endl;
         if (subHolding != NULL)
             cout << "\t  Sub Holding: " << subHolding->Card::getName() << endl;
+    }
+    bool addFollower(GreenCard *follower) { return false; }
+    bool addItem(GreenCard *item) { return false; }
+    bool hasUpper()
+    {
+        if (upperHolding == NULL)
+            return false;
+        return true;
+    }
+    bool hasSub()
+    {
+        if (subHolding == NULL)
+            return false;
+        return true;
+    }
+    bool setUpper(BlackCard *holding)
+    {
+        upperHolding = holding;
+        return true;
+    }
+    bool setSub(BlackCard *holding)
+    {
+        subHolding = holding;
+        return true;
     }
     bool checkValue()
     {

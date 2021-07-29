@@ -12,12 +12,13 @@ private:
     int isTapped; //1 == tapped
 public:
     Card(string n, int x);
-
     void print()
     {
         cout << "Name: " << name << endl;
-        cout << "Cost: " << cost << endl;
-
+        if (cost >= 0) //set cost to -1 when bought
+            cout << "  Cost: " << cost << endl;
+        else
+            printSpecific();
         if (isTapped)
             cout << "  Tapped" << endl;
         else
@@ -27,14 +28,27 @@ public:
     {
         return isTapped;
     }
+    void setIsTapped(int num)
+    {
+        if (num < 0 || num > 1)
+            isTapped = 1 - isTapped;
+        else
+            isTapped = num;
+    }
     int getCost()
     {
         return cost;
+    }
+    void setCost()
+    {
+        cost = -1;
     }
     string getName()
     {
         return name;
     }
+    virtual int getHarvestValue() = 0;
+    virtual void printSpecific() = 0;
 };
 
 class GreenCard : public Card
@@ -50,7 +64,6 @@ private:
 public:
     GreenCard(string n, int x);
     virtual int getType() = 0;
-    virtual int getSubType() = 0;
     void print()
     {
         Card::print();
@@ -93,10 +106,21 @@ public:
         else
             cout << "\tNot Revealed" << endl;
     }
-    int getisRevealed()
+    void setIsReleaved(int num)
     {
-        return isReleaved;
+        if (num < 0 || num > 1)
+            return;
+        isReleaved = num;
     }
+    virtual int getMoney() = 0;
+    virtual bool addFollower(GreenCard *) = 0;
+    virtual bool addItem(GreenCard *) = 0;
+    virtual bool hasUpper() = 0;
+    virtual bool hasSub() = 0;
+    virtual bool setUpper(BlackCard *holding) = 0;
+    virtual bool setSub(BlackCard *holding) = 0;
+    virtual bool checkValue() = 0;
+    virtual int getPower(bool) = 0;
 };
 
 #endif

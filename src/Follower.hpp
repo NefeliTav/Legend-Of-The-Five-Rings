@@ -8,6 +8,11 @@ class Follower : public GreenCard
 public:
     Follower(string n, int x);
     int getType();
+    int getHarvestValue()
+    {
+        return 0;
+    }
+    void printSpecific() {}
 };
 
 class Footsoldier : public Follower
