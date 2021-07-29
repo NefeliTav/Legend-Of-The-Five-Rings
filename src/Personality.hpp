@@ -82,7 +82,7 @@ public:
         items->push_back(item);
         return true;
     }
-    int getPower(bool isAttack) // compute personality's power in battle
+    int getPower(bool isAttack)
     {
         int sum;
         if (isAttack)

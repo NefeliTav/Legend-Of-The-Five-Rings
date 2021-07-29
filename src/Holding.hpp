@@ -73,11 +73,11 @@ public:
         else if (getSubType() == GOLD_MINE && hasUpper() && upperHolding->getSubType() == CRYSTAL_MINE && !hasSub())
             bonusValue = 5;
         else if (getSubType() == GOLD_MINE && hasUpper() && upperHolding->getSubType() == CRYSTAL_MINE && hasSub() && subHolding->getSubType() == MINE)
-            bonusValue = 2 * harvestValue;
+            bonusValue = harvestValue;
         else if (getSubType() == CRYSTAL_MINE && hasSub() && subHolding->getSubType() == GOLD_MINE && !subHolding->hasSub())
             bonusValue = harvestValue;
         else if (getSubType() == CRYSTAL_MINE && hasSub() && subHolding->getSubType() == GOLD_MINE && subHolding->hasSub())
-            bonusValue = 3 * harvestValue;
+            bonusValue = 2 * harvestValue;
         return true;
     }
     int getPower(bool isAttack) { return 0; }
