@@ -121,6 +121,213 @@ public:
             i++;
         }
     }
+    void startingPhase()
+    {
+        cout << endl
+             << " __  _____   __    ___  _____  _   _      __        ___   _      __    __   ____" << endl;
+        cout << "( (`  | |   / /\\  | |_)  | |  | | | |\\ | / /`_     | |_) | |_|  / /\\  ( (` | |_  " << endl;
+        cout << "_)_)  |_|  /_/--\\ |_| \\  |_|  |_| |_| \\| \\_\\_/     |_|   |_| | /_/--\\ _)_) |_|__ \t( Player: " << pl << " )" << endl
+             << endl;
+        untapEverything();
+        drawFateCard();
+        revealProvinces();
+        printHand(false);
+        printProvinces(false);
+    }
+    // equip phase
+    void printArmy(bool showNum = false)
+    { //show the number so player can choose and buy
+        list<BlackCard *>::iterator it;
+        cout << "Army:" << endl;
+        cout << "=============" << endl;
+        if (army == NULL || army->empty())
+            return;
+        int i = 0;
+        for (it = army->begin(); it != army->end(); ++it)
+        {
+            if (showNum)
+                cout << i << ")" << endl;
+            (*it)->print();
+            i++;
+        }
+    }
+
+    void printHoldings(bool showNum = false)
+    { //show the number so player can choose and buy
+        list<BlackCard *>::iterator it;
+        cout << "Holdings:" << endl;
+        cout << "=============" << endl;
+        if (h == NULL || h->empty())
+            return;
+        int i = 0;
+        for (it = h->begin(); it != h->end(); ++it)
+        {
+            if (showNum)
+                cout << i << ")" << endl;
+            (*it)->print();
+            i++;
+        }
+    }
+
+    void equipPhase()
+    {
+        cout << endl
+             << " ____  ___    _     _   ___       ___   _      __    __   ____ " << endl;
+        cout << "| |_  / / \\  | | | | | | |_)     | |_) | |_|  / /\\  ( (` | |_ " << endl;
+        cout << "|_|__ \\_\\_\\\\ \\_\\_/ |_| |_|       |_|   |_| | /_/--\\ _)_) |_|__\t( Player: " << pl << " )" << endl
+             << endl;
+
+        if (army->empty())
+        {
+            cin.clear();
+            cout << "You have no army so you cannot buy..." << endl;
+            getchar();
+            return;
+        }
+        int cardNum, i;
+        list<int> toRemove;
+        list<GreenCard *>::iterator it;
+        list<BlackCard *>::iterator it2;
+        GreenCard *wantToBuy;
+
+        printHand(true);
+        printProvinces(false);
+        cout << "- Money available: " << calculateMoney() << " -" << endl;
+        if (hand->empty())
+        {
+            cout << "Hand is empty..." << endl;
+            getchar();
+            return;
+        }
+        /////////////////////////////
+        cardNum = -2;
+        //choose a card from your hand to buy
+        while (cardNum != -1 && hand->size() != 0 && !army->empty())
+        {
+            cout << "Select card (0 - " << hand->size() - 1 << ") or -1 to continue:" << endl;
+            cin.clear(); //so that it waits for new cin
+            cin >> cardNum;
+            if (cardNum < -1 || cardNum >= hand->size())
+                cout << "No such card..." << endl;
+            else
+            {
+                i = 0;
+                for (it = hand->begin(); it != hand->end(); ++it)
+                {
+                    if (i == cardNum)
+                        break;
+                    i++;
+                }
+                wantToBuy = *it;
+                if ((*it)->getCost() > calculateMoney())
+                {
+                    cout << "Not enough money" << endl;
+                }
+                else
+                {
+                    // if you can buy it
+                    int money = (*it)->getCost();
+                    printHoldings(true);
+                    cardNum = -2;
+                    //choose the cards you want to tap to buy it
+                    while (money > 0 && cardNum != -1 && h->size() != 0)
+                    {
+                        cout << "Choose a card to Tap to reach " << money << " coins or -1 to exit:" << endl;
+                        cin.clear();
+                        cin >> cardNum;
+                        if (cardNum < -1 || cardNum >= h->size())
+                            cout << "No such card..." << endl;
+                        else if (contains(toRemove, i))
+                        {
+                            cout << "Already selected..." << endl;
+                        }
+                        else
+                        {
+                            i = 0;
+                            for (it2 = h->begin(); it2 != h->end(); ++it2)
+                            {
+                                if (i == cardNum)
+                                    break;
+                                i++;
+                            }
+                            if ((*it2)->getIsTapped())
+                            {
+                                cout << "Card already tapped..." << endl;
+                            }
+                            else
+                            {
+                                money -= (*it2)->getHarvestValue();
+                                toRemove.push_front(i);
+                            }
+                        }
+                    }
+                    //if you ve tapped enough cards to buy the wantToBuy card
+                    if (cardNum != -1)
+                    {
+                        cardNum = -2;
+                        while (cardNum != -1 && !army->empty())
+                        {
+                            printArmy(true);
+                            cout << "Select card (0 - " << army->size() - 1 << ") to equip - " << wantToBuy->getName() << " - to or -1 to continue:" << endl;
+                            cin.clear(); //so that it waits for new cin
+                            cin >> cardNum;
+                            if (cardNum < -1 || cardNum >= army->size())
+                                cout << "No such card..." << endl;
+                            else
+                            {
+                                i = 0;
+                                for (it2 = army->begin(); it2 != army->end(); ++it2)
+                                {
+                                    if (cardNum == i)
+                                        break;
+                                    i++;
+                                }
+                                //check max followers and max items
+                                if (((wantToBuy->getType() == FOLLOWER) && ((*it2)->addFollower(wantToBuy))) || ((wantToBuy->getType() == ITEM) && ((*it2)->addItem(wantToBuy))))
+                                {
+                                    //tap the cards selected
+                                    i = 0;
+                                    if (!toRemove.empty())
+                                    {
+                                        toRemove.sort();
+                                        for (it2 = h->begin(); it2 != h->end(); ++it2)
+                                        {
+                                            if (toRemove.empty())
+                                                break;
+                                            if (i == toRemove.front())
+                                            {
+                                                toRemove.pop_front();
+                                                (*it2)->setIsTapped(1);
+                                            }
+                                            i++;
+                                        }
+                                    }
+                                    wantToBuy->setCost();
+                                    //you bought it so remove it from your hand
+                                    for (it = hand->begin(); it != hand->end(); ++it)
+                                    {
+                                        if ((*it) == wantToBuy)
+                                        {
+                                            hand->erase(it);
+                                            break;
+                                        }
+                                    }
+                                    cardNum = -1;
+                                }
+                                else
+                                {
+                                    cout << "Please try again..." << endl;
+                                }
+                            }
+                        }
+                    }
+                    cardNum = -2;
+                    //stuff
+                    printHand(true);
+                }
+            }
+        }
+    }
 };
 
 int get_cost(int);
