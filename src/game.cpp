@@ -62,6 +62,65 @@ public:
     {
         return army->empty();
     }
+
+    // starting phase
+    void untapEverything()
+    {
+        if (h == NULL || h->empty())
+            return;
+        list<BlackCard *>::iterator it;
+        for (it = h->begin(); it != h->end(); ++it)
+        {
+            (*it)->setIsTapped(0);
+        }
+    }
+    void drawFateCard()
+    {
+        getGreen();
+    }
+    void revealProvinces()
+    {
+        if (provinces == NULL || provinces->empty())
+            return;
+        list<BlackCard *>::iterator it;
+        for (it = provinces->begin(); it != provinces->end(); ++it)
+        {
+            (*it)->setIsReleaved(1);
+        }
+    }
+    void printHand(bool showNum = false)
+    { //show the number so player can choose and buy
+        list<GreenCard *>::iterator it;
+        cout << "Hand:" << endl;
+        cout << "=============" << endl;
+        if (hand == NULL || hand->empty())
+            return;
+        int i = 0;
+        for (it = hand->begin(); it != hand->end(); ++it)
+        {
+            if (showNum)
+                cout << i << ")" << endl;
+            (*it)->print();
+            i++;
+        }
+    }
+    void printProvinces(bool showNum = false)
+    { //show the number so player can choose and buy
+        list<BlackCard *>::iterator it;
+        cout << "Provinces:" << endl;
+        cout << "=============" << endl;
+        if (provinces == NULL || provinces->empty())
+            return;
+        int i = 0;
+        for (it = provinces->begin(); it != provinces->end(); ++it)
+        {
+            if (showNum)
+                cout << i << ")" << endl;
+
+            (*it)->print();
+            i++;
+        }
+    }
 };
 
 int get_cost(int);
